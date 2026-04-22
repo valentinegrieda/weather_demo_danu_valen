@@ -106,7 +106,8 @@ struct Screen1View: View {
                 VStack {
                     HStack {
                         Text(selectedWeather.location.uppercased())
-                            
+                            .font(.system(size: 20, weight: .light))
+                        
                         Image(systemName: "location.fill")
                             .onTapGesture {
                                     showSheet = true
