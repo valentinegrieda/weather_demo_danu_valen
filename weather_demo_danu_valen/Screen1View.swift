@@ -74,6 +74,7 @@ struct Screen1View: View {
     @State private var goToScreen2 = false
     @State private var showSheet = false
     
+    //initial data
     @State private var selectedWeather = Weather(
         id: 1,
         condition: "Cloudy",
@@ -107,8 +108,8 @@ struct Screen1View: View {
                     HStack {
                         Text(selectedWeather.location.uppercased())
                             .font(.system(size: 20, weight: .light))
-                        
-                        Image(systemName: "location.fill")
+                            .fontWidth(.expanded)
+                        Image(systemName: "chevron.down")
                             .onTapGesture {
                                     showSheet = true
                                 }
@@ -149,16 +150,18 @@ struct Screen1View: View {
                                 )
                     }
                     .frame(alignment:.leading)
-                    .foregroundStyle(Color(.gray))
+                    //.foregroundStyle(Color(.black))
+                    .opacity(0.8)
                     .frame(maxHeight: .infinity, alignment: .top)
+                    .padding (.top, 20)
                 }
                 
                 
                 VStack(alignment: .leading, spacing: -15) {
                     //degree
                     Text("\(selectedWeather.temperature)°")
-                        .font(.largeTitle)
-                        .fontWeight(.thin)
+                        .font(.system(size: 50, weight: .light))
+                        .fontWidth(.expanded)
                         .padding([.leading,.bottom],20)
                     
                     
@@ -176,7 +179,8 @@ struct Screen1View: View {
                     
                     //change weather
                     Text(selectedWeather.extras.uppercased())
-                        .font(.system(size: 36, weight: .semibold,))
+                        .font(.system(size: 30, weight: .light))
+                        .fontWidth(.expanded)
                         .padding([.top,.trailing],20)
                         .frame(maxWidth: .infinity, alignment: .trailing)
                 }
@@ -213,5 +217,6 @@ struct Screen1View: View {
 #Preview {
     NavigationStack {
         Screen1View()
+            .preferredColorScheme(.light)
     }
 }
