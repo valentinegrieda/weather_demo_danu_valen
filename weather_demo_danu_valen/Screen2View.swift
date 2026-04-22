@@ -141,6 +141,7 @@ struct Screen2View: View {
                                     .padding(.bottom, 20)
                                     .hidden()
                             }
+                            
                         }
                         
                         // animated visible stack
@@ -154,6 +155,7 @@ struct Screen2View: View {
                                         .fixedSize(horizontal: false, vertical: true)
                                         .padding(.bottom, 20)
                                         .transition(.move(edge: .leading).combined(with: .opacity))
+                                        .foregroundStyle(Color(.black))
                                 }
                             }
                         }
@@ -204,7 +206,7 @@ struct Screen2View: View {
                 t.invalidate()
             }
         }
-    }    
+    }
     
 }
 
