@@ -52,6 +52,7 @@ struct Screen2View: View {
                 Color.white
                     .ignoresSafeArea()
                 
+                //gradient
                 Ellipse()
                     .fill(Color(hex:weather.color).opacity(0.8))
                     .frame(width: 350, height: 400)
@@ -63,8 +64,9 @@ struct Screen2View: View {
                     HStack {
                         
                         Text(weather.location.uppercased())
-                        
-                        Image(systemName: "location.fill")
+                            .font(.system(size: 20, weight: .light))
+                            .fontWidth(.expanded)
+                        Image(systemName: "chevron.down")
                             .onTapGesture {
                                 showSheet = true
                             }
@@ -98,16 +100,19 @@ struct Screen2View: View {
                             }
                     }
                     .frame(alignment:.leading)
-                    .foregroundStyle(Color(.gray))
+                    .foregroundStyle(Color(.black))
+                    .opacity(0.8)
                     .frame(maxHeight: .infinity, alignment: .top)
+                    .padding (.top, 20)
                     
                 }
                 
                 
                 VStack {
                     
-                    Spacer().frame(height: 100)
+                    Spacer().frame(height: 60)
                     
+                    //weather type + next
                     HStack(spacing:5) {
                         Text(weather.condition.uppercased())
                             .foregroundStyle(.black)
@@ -123,6 +128,7 @@ struct Screen2View: View {
                     
                     Spacer().frame(height: 100)
                     
+                    //activities
                     ZStack(alignment: .topLeading) {
                         
                         // invisible layout holder
@@ -153,11 +159,11 @@ struct Screen2View: View {
                         }
                     }
                     .animation(.easeInOut, value: index)
-                    
                     .onAppear {
                         startAnimation()
                     }
                     
+                    //back button
                     Button {
                         print("Tapped 2")
                         dismiss()
@@ -218,4 +224,6 @@ struct Screen2View: View {
             )
         )
     )
+    .preferredColorScheme(.light)
+
 }
