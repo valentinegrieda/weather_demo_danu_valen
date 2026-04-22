@@ -21,6 +21,151 @@ extension Color {
     }
 }
 
+struct SunnyEffect: View {
+    @State private var rotate = false
+    @State private var pulse = false
+    
+    var body: some View {
+        ZStack {
+            
+            // warm sky glow
+            RadialGradient(
+                colors: [
+                    Color.yellow.opacity(0.35),
+                    Color.orange.opacity(0.15),
+                    Color.clear
+                ],
+                center: .topTrailing,
+                startRadius: 50,
+                endRadius: 400
+            )
+            .ignoresSafeArea()
+            
+            // sun rays
+            ForEach(0..<8) { i in
+                Rectangle()
+                    .fill(Color.yellow.opacity(0.15))
+                    .frame(width: 4, height: 200)
+                    .offset(y: -150)
+                    .rotationEffect(.degrees(Double(i) * 45))
+                    .rotationEffect(.degrees(rotate ? 360 : 0))
+                    .animation(.linear(duration: 40).repeatForever(autoreverses: false), value: rotate)
+            }
+            
+            // sun core
+            Circle()
+                .fill(
+                    RadialGradient(
+                        colors: [
+                            Color.yellow,
+                            Color.orange.opacity(0.7)
+                        ],
+                        center: .center,
+                        startRadius: 10,
+                        endRadius: 60
+                    )
+                )
+                .frame(width: 120, height: 120)
+                .scaleEffect(pulse ? 1.05 : 0.95)
+                .offset(x: 0, y: 0)
+                .animation(.easeInOut(duration: 4).repeatForever(autoreverses: true), value: pulse)
+        }
+        .onAppear {
+            rotate = true
+            pulse = true
+        }
+    }
+}
+
+struct RainEffect: View {
+    @State private var move = false
+    
+    var body: some View {
+        GeometryReader { geo in
+            ZStack {
+                
+                // darker sky (helps rain visibility)
+                Color.black.opacity(0.08)
+                    .ignoresSafeArea()
+                
+                ForEach(0..<120) { _ in
+                    Capsule()
+                        .fill(Color.white.opacity(0.7))
+                        .frame(width: 2, height: 18)
+                        .rotationEffect(.degrees(15))
+                        .position(
+                            x: CGFloat.random(in: 0...geo.size.width),
+                            y: move ? geo.size.height + 40 : -40
+                        )
+                        .animation(
+                            .linear(duration: Double.random(in: 0.6...1.0))
+                            .repeatForever(autoreverses: false),
+                            value: move
+                        )
+                }
+            }
+        }
+        .blur(radius: 0.3)
+        .ignoresSafeArea()
+        .onAppear { move = true }
+    }
+}
+
+struct CloudyEffect: View {
+    @State private var move = false
+    
+    var body: some View {
+        GeometryReader { geo in
+            ZStack {
+                ForEach(0..<3) { i in
+                    Image(systemName: "cloud.fill")
+                        .font(.system(size: CGFloat(120 - i * 20)))
+                        .foregroundColor(.gray.opacity(0.25))
+                        .offset(
+                            x: move ? geo.size.width : -geo.size.width,
+                            y: CGFloat(i * 40)
+                        )
+                        .animation(
+                            .linear(duration: Double(8 + i * 4)) // faster
+                            .repeatForever(autoreverses: false),
+                            value: move
+                        )
+                }
+            }
+        }
+        .ignoresSafeArea()
+        .onAppear { move = true }
+    }
+}
+
+struct StormEffect: View {
+    @State private var flash = false
+    
+    var body: some View {
+        ZStack {
+            
+            // dark sky
+            Color.black.opacity(0.15)
+                .ignoresSafeArea()
+            
+            // rain
+            RainEffect()
+            
+            // lightning flash
+            Color.white
+                .opacity(flash ? 0.25 : 0)
+                .ignoresSafeArea()
+        }
+        .onAppear {
+            Timer.scheduledTimer(withTimeInterval: 3, repeats: true) { _ in
+                flash = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
+                    flash = false
+                }
+            }
+        }
+    }
+}
 
 struct Screen1View: View {
     
@@ -95,6 +240,23 @@ struct Screen1View: View {
                 Color.white
                     .ignoresSafeArea()
                 
+                // Weather Effect Layer
+                Group {
+                    switch selectedWeather.condition {
+                    case "Sunny":
+                        SunnyEffect()
+                    case "Rainy":
+                        RainEffect()
+                    case "Cloudy":
+                        CloudyEffect()
+                    case "Stormy":
+                        StormEffect()
+                    default:
+                        EmptyView()
+                    }
+                }
+                .ignoresSafeArea()
+                
                 Ellipse()
                 //.fill(randomWeather.color.opacity(0.45))
                     .fill(Color(hex: selectedWeather.color).opacity(0.8))
@@ -109,6 +271,7 @@ struct Screen1View: View {
                         Text(selectedWeather.location.uppercased())
                             .font(.system(size: 20, weight: .light))
                             .fontWidth(.expanded)
+                            .foregroundStyle(Color(.black))
                         Image(systemName: "chevron.down")
                             .onTapGesture {
                                     showSheet = true
@@ -154,6 +317,7 @@ struct Screen1View: View {
                     .opacity(0.8)
                     .frame(maxHeight: .infinity, alignment: .top)
                     .padding (.top, 20)
+                    .foregroundStyle(Color(.black))
                 }
                 
                 
@@ -163,6 +327,7 @@ struct Screen1View: View {
                         .font(.system(size: 50, weight: .light))
                         .fontWidth(.expanded)
                         .padding([.leading,.bottom],20)
+                        .foregroundStyle(Color(.black))
                     
                     
                     //old weather
@@ -183,6 +348,7 @@ struct Screen1View: View {
                         .fontWidth(.expanded)
                         .padding([.top,.trailing],20)
                         .frame(maxWidth: .infinity, alignment: .trailing)
+                        .foregroundStyle(Color(.black))
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 
